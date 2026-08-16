@@ -4,7 +4,9 @@
 Real-time messaging, 1-on-1 & group video calling, disappearing statuses, and a friend-request based social graph — built on the MERN stack with Stream for chat/video infrastructure.
 </p>
 
-![TalkHub Logo](./frontend/public/talkhub.svg)
+<p align="center">
+  <img src="./frontend/public/talkhub.svg" alt="TalkHub Logo" width="150" height="150" />
+</p>
 
 ---
 
