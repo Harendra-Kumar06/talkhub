@@ -69,12 +69,12 @@
   position: relative;
 }
 
-/* Hide via opacity ONLY — keep pointer-events auto! */
+/* 🔧 FIXED: Hide via opacity AND pointer-events when not hovering */
 .str-chat__message-simple__actions,
 .str-chat__message-options {
   opacity: 0;
   transition: opacity 0.15s ease;
-  pointer-events: auto;
+  pointer-events: none;  /* ← CHANGED: was 'auto', now 'none' when hidden */
 }
 
 /* Show on hover of message or the toolbar itself */
@@ -89,7 +89,7 @@
 .str-chat__message-simple__actions:focus-within,
 .str-chat__message-options:focus-within {
   opacity: 1;
-  pointer-events: auto;
+  pointer-events: auto;  /* ← Only auto when actually visible */
 }
 
 /* Toolbar pill styling */
@@ -106,17 +106,7 @@
   z-index: 10;
 }
 
-/* Invisible bridge so mouse doesn't lose hover when moving to toolbar */
-.str-chat__message-simple__actions::before,
-.str-chat__message-options::before {
-  content: "";
-  position: absolute;
-  top: -10px;
-  left: -10px;
-  right: -10px;
-  bottom: -10px;
-  z-index: -1;
-}
+/* 🔧 REMOVED: The invisible ::before bridge that was blocking clicks on attachments */
 
 /* Action buttons inside toolbar */
 .str-chat__message-simple__actions button,
@@ -153,7 +143,6 @@
 
 /* ============================================
    ACTIONS DROPDOWN (Reply / Edit / Delete)
-   These are rendered in a PORTAL at document root
    ============================================ */
 
 .str-chat__dialog-overlay {
@@ -235,6 +224,218 @@ button[aria-label*="Delete" i]:hover {
 }
 
 /* ============================================
+   ATTACHMENTS — IMAGES, VIDEOS, FILES (FULLY CLICKABLE)
+   ============================================ */
+
+/* 🔧 CRITICAL: Ensure attachments are ALWAYS clickable */
+.str-chat__message-attachment,
+.str-chat__message-attachment--image,
+.str-chat__message-attachment--video,
+.str-chat__message-attachment--file,
+.str-chat__message-attachment-file,
+.str-chat__message-attachment-file--item,
+.str-chat__message-attachment-card,
+.str-chat__attachment-list,
+.str-chat__attachment-list-scroll-container,
+.str-chat__gallery,
+.str-chat__gallery-image {
+  pointer-events: auto !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/* All interactive elements inside attachments */
+.str-chat__message-attachment img,
+.str-chat__message-attachment video,
+.str-chat__message-attachment audio,
+.str-chat__message-attachment a,
+.str-chat__message-attachment button,
+.str-chat__message-attachment-file a,
+.str-chat__message-attachment-file button,
+.str-chat__message-attachment-file--item a,
+.str-chat__message-attachment-file--item button {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+/* Image attachments */
+.str-chat__message-attachment--image {
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  max-width: 320px !important;
+  max-height: 400px !important;
+}
+
+.str-chat__message-attachment--image img,
+.str-chat__gallery-image img {
+  border-radius: 12px !important;
+  max-width: 320px !important;
+  max-height: 400px !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+/* Gallery */
+.str-chat__gallery {
+  max-width: 320px !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  display: grid !important;
+  gap: 4px !important;
+}
+
+/* Modal (full-size image preview) */
+.str-chat__modal,
+.str-chat__modal--open,
+.str-chat__modal__inner {
+  z-index: 10001 !important;
+  pointer-events: auto !important;
+}
+
+.str-chat__modal__inner {
+  background: rgba(0, 0, 0, 0.9) !important;
+}
+
+.str-chat__modal-image,
+.str-chat__modal-image-inner {
+  max-width: 90vw !important;
+  max-height: 90vh !important;
+}
+
+/* Video attachments */
+.str-chat__message-attachment--video,
+.str-chat__player-wrapper {
+  max-width: 380px !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  background: #000 !important;
+}
+
+.str-chat__message-attachment--video video,
+.str-chat__player-wrapper video,
+video.str-chat__video-angular {
+  max-width: 380px !important;
+  max-height: 400px !important;
+  width: 100% !important;
+  height: auto !important;
+  border-radius: 12px !important;
+  display: block !important;
+  background: #000 !important;
+  pointer-events: auto !important;
+}
+
+/* File attachments (PDF, docs, etc.) */
+.str-chat__message-attachment-file--item,
+.str-chat__message-attachment-file {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 12px !important;
+  background: hsl(var(--b2)) !important;
+  border: 1px solid hsl(var(--b3)) !important;
+  border-radius: 12px !important;
+  min-width: 240px !important;
+  max-width: 320px !important;
+  text-decoration: none !important;
+  transition: background 0.15s ease;
+}
+
+.str-chat__message-attachment-file--item:hover,
+.str-chat__message-attachment-file:hover {
+  background: hsl(var(--b3)) !important;
+}
+
+.str-chat__message-attachment-file--item-text,
+.str-chat__message-attachment-file--item a {
+  color: hsl(var(--bc)) !important;
+  font-size: 0.875rem !important;
+  text-decoration: none !important;
+  display: block !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  max-width: 200px !important;
+}
+
+.str-chat__message-attachment-file--item-download,
+.str-chat__attachment-file-download-icon,
+a[download] {
+  color: hsl(var(--p)) !important;
+  cursor: pointer !important;
+  padding: 6px !important;
+  border-radius: 50% !important;
+  transition: background 0.15s ease;
+  pointer-events: auto !important;
+}
+
+.str-chat__message-attachment-file--item-download:hover,
+.str-chat__attachment-file-download-icon:hover {
+  background: hsl(var(--p) / 0.15) !important;
+}
+
+.str-chat__message-attachment-file--item svg,
+.str-chat__message-attachment-file svg {
+  width: 32px !important;
+  height: 32px !important;
+  flex-shrink: 0 !important;
+}
+
+.str-chat__message-attachment-file--item-info {
+  flex: 1 !important;
+  min-width: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+}
+
+.str-chat__message-attachment-file--item-size,
+.str-chat__attachment-file-size {
+  font-size: 0.75rem !important;
+  opacity: 0.6 !important;
+}
+
+/* Card attachments (link previews) */
+.str-chat__message-attachment-card {
+  border: 1px solid hsl(var(--b3)) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  max-width: 320px !important;
+}
+
+.str-chat__message-attachment-card--content {
+  background: hsl(var(--b2)) !important;
+  padding: 10px 12px !important;
+}
+
+.str-chat__message-attachment-card--title {
+  color: hsl(var(--bc)) !important;
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+}
+
+.str-chat__message-attachment-card--url {
+  color: hsl(var(--p)) !important;
+  font-size: 0.75rem !important;
+}
+
+/* Attachment list container */
+.str-chat__message-attachment-list,
+.str-chat__attachment-list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  pointer-events: auto !important;
+}
+
+/* Message bubble should not clip attachments */
+.str-chat__message-bubble,
+.str-chat__message-simple__bubble {
+  overflow: visible !important;
+}
+
+/* ============================================
    RESIZABLE PANEL
    ============================================ */
 
@@ -278,10 +479,27 @@ button[aria-label*="Delete" i]:hover {
     min-width: 0 !important;
   }
 
-  /* On mobile — always show actions (touch devices don't hover) */
+  /* On mobile — always show actions */
   .str-chat__message-simple__actions,
   .str-chat__message-options {
     opacity: 1;
     pointer-events: auto;
+  }
+
+  /* Mobile attachment sizes */
+  .str-chat__message-attachment--image,
+  .str-chat__message-attachment--image img {
+    max-width: 240px !important;
+    max-height: 300px !important;
+  }
+  
+  .str-chat__message-attachment--video,
+  .str-chat__message-attachment--video video {
+    max-width: 260px !important;
+  }
+  
+  .str-chat__message-attachment-file--item {
+    min-width: 200px !important;
+    max-width: 260px !important;
   }
 }
