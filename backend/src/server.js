@@ -1,9 +1,8 @@
 import express from "express";
-import cors from "cors";
+import "dotenv/config";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 import compression from "compression";
-import path from "path";
-import dotenv from "dotenv";
 
 import authRoutes from "./routes/auth.route.js";
 import userRoutes from "./routes/user.route.js";
@@ -14,16 +13,13 @@ import callRoutes from "./routes/call.route.js";
 
 import { connectDB } from "./lib/db.js";
 
-dotenv.config();
-
 const app = express();
 const PORT = process.env.PORT || 5001;
-const __dirname = path.resolve();
 
-// 🚀 Gzip compression (60-80% smaller responses)
+// 🚀 Gzip compression
 app.use(compression());
 
-// ✅ CORS Configuration (works for both dev & production)
+// ✅ CORS Configuration
 app.use(
   cors({
     origin: process.env.NODE_ENV === "production" 
@@ -37,13 +33,31 @@ app.use(express.json({ limit: "20mb" }));
 app.use(express.urlencoded({ extended: true, limit: "20mb" }));
 app.use(cookieParser());
 
-// ✅ Health check endpoint (REQUIRED for Render!)
+// ✅ Health check endpoint
 app.get("/health", (req, res) => {
   res.status(200).json({ 
     status: "ok", 
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
-    environment: process.env.NODE_ENV || "development"
+    environment: process.env.NODE_ENV || "development",
+    clientUrl: process.env.CLIENT_URL || "not set"
+  });
+});
+
+// ✅ Root endpoint
+app.get("/", (req, res) => {
+  res.json({ 
+    message: "TalkHub API is running! 🚀",
+    frontend: process.env.CLIENT_URL,
+    endpoints: {
+      health: "/health",
+      auth: "/api/auth",
+      users: "/api/users",
+      chat: "/api/chat",
+      groups: "/api/groups",
+      calls: "/api/calls",
+      status: "/api/status"
+    }
   });
 });
 
@@ -55,34 +69,25 @@ app.use("/api/status", statusRoutes);
 app.use("/api/groups", groupRoutes);
 app.use("/api/calls", callRoutes);
 
-// ✅ Serve frontend in production (only if deployed together)
-if (process.env.NODE_ENV === "production") {
-  // 🚀 Cache static assets for 1 year (huge performance boost!)
-  app.use(
-    express.static(path.join(__dirname, "../frontend/dist"), {
-      maxAge: "1y",
-      etag: true,
-      lastModified: true,
-    })
-  );
-
-  // Serve index.html for all non-API routes (SPA support)
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
+// ✅ 404 Handler for undefined routes
+app.use((req, res) => {
+  res.status(404).json({ 
+    message: "Route not found",
+    method: req.method,
+    path: req.originalUrl
   });
-}
+});
 
-// ✅ Global Error Handler (helpful for debugging)
+// ✅ Global Error Handler
 app.use((err, req, res, next) => {
   console.error("❌ Error:", err.message);
   res.status(err.status || 500).json({
     message: err.message || "Internal Server Error",
-    ...(process.env.NODE_ENV !== "production" && { stack: err.stack }),
   });
 });
 
-// ✅ Start server
 app.listen(PORT, () => {
   console.log(`✅ Server running on port ${PORT} in ${process.env.NODE_ENV || "development"} mode`);
+  console.log(`✅ CORS enabled for: ${process.env.CLIENT_URL || "http://localhost:5173"}`);
   connectDB();
 });
