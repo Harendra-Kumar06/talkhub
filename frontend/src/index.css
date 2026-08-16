@@ -1,0 +1,287 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   STREAM CHAT - BASE LAYOUT
+   ============================================ */
+
+.str-chat {
+  height: 100% !important;
+}
+
+.str-chat__channel {
+  height: 100% !important;
+  background: transparent;
+}
+
+.str-chat__container {
+  max-width: 100%;
+  width: 100%;
+  height: 100% !important;
+  margin: 0 !important;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.str-chat__main-panel {
+  padding: 0 !important;
+  height: 100% !important;
+}
+
+.str-chat__list {
+  background-color: transparent;
+  padding: 12px;
+}
+
+.str-chat__list-notifications {
+  display: none;
+}
+
+.str-chat__thread {
+  height: 100% !important;
+}
+
+/* Hide default channel header */
+.str-chat__header-livestream,
+.str-chat__channel-header {
+  display: none !important;
+}
+
+/* ============================================
+   MESSAGE INPUT
+   ============================================ */
+
+.str-chat__message-input {
+  border-top: 1px solid hsl(var(--b3));
+  background-color: hsl(var(--b1));
+  padding: 12px;
+}
+
+/* ============================================
+   MESSAGE ACTIONS — always clickable, fade on hover
+   ============================================ */
+
+.str-chat__message,
+.str-chat__message-simple,
+.str-chat__li {
+  position: relative;
+}
+
+/* Hide via opacity ONLY — keep pointer-events auto! */
+.str-chat__message-simple__actions,
+.str-chat__message-options {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  pointer-events: auto;
+}
+
+/* Show on hover of message or the toolbar itself */
+.str-chat__message:hover .str-chat__message-simple__actions,
+.str-chat__message:hover .str-chat__message-options,
+.str-chat__message-simple:hover .str-chat__message-simple__actions,
+.str-chat__message-simple:hover .str-chat__message-options,
+.str-chat__li:hover .str-chat__message-simple__actions,
+.str-chat__li:hover .str-chat__message-options,
+.str-chat__message-simple__actions:hover,
+.str-chat__message-options:hover,
+.str-chat__message-simple__actions:focus-within,
+.str-chat__message-options:focus-within {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Toolbar pill styling */
+.str-chat__message-simple__actions,
+.str-chat__message-options {
+  background: hsl(var(--b1));
+  border: 1px solid hsl(var(--b3));
+  border-radius: 20px;
+  padding: 2px 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  z-index: 10;
+}
+
+/* Invisible bridge so mouse doesn't lose hover when moving to toolbar */
+.str-chat__message-simple__actions::before,
+.str-chat__message-options::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  z-index: -1;
+}
+
+/* Action buttons inside toolbar */
+.str-chat__message-simple__actions button,
+.str-chat__message-options button,
+.str-chat__message-actions-open-button {
+  background: transparent !important;
+  border: none !important;
+  padding: 4px !important;
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 50% !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: hsl(var(--bc)) !important;
+  opacity: 0.7;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+}
+
+.str-chat__message-simple__actions button:hover,
+.str-chat__message-options button:hover,
+.str-chat__message-actions-open-button:hover {
+  background: hsl(var(--b2)) !important;
+  opacity: 1;
+}
+
+.str-chat__message-simple__actions button svg,
+.str-chat__message-options button svg,
+.str-chat__message-actions-open-button svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+/* ============================================
+   ACTIONS DROPDOWN (Reply / Edit / Delete)
+   These are rendered in a PORTAL at document root
+   ============================================ */
+
+.str-chat__dialog-overlay {
+  z-index: 9999 !important;
+  pointer-events: auto !important;
+}
+
+.str-chat__message-actions-box,
+.str-chat__message-actions-list,
+.str-chat-react__message-actions-box {
+  background: hsl(var(--b1)) !important;
+  border: 1px solid hsl(var(--b3)) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+  padding: 4px !important;
+  min-width: auto !important;
+  width: auto !important;
+  max-width: 200px;
+  overflow: hidden;
+  z-index: 10000 !important;
+  pointer-events: auto !important;
+}
+
+.str-chat__message-actions-list-item,
+.str-chat__message-actions-list-item-button {
+  background: transparent !important;
+  border: none !important;
+  padding: 8px 16px !important;
+  border-radius: 8px !important;
+  font-size: 0.875rem !important;
+  color: hsl(var(--bc)) !important;
+  cursor: pointer !important;
+  width: 100%;
+  min-width: 120px;
+  text-align: left;
+  white-space: nowrap;
+  display: block;
+  pointer-events: auto !important;
+}
+
+.str-chat__message-actions-list-item:hover,
+.str-chat__message-actions-list-item-button:hover {
+  background: hsl(var(--b2)) !important;
+}
+
+.str-chat__message-actions-list-item-button--delete:hover,
+button[aria-label*="Delete" i]:hover {
+  background: hsl(var(--er) / 0.15) !important;
+  color: hsl(var(--er)) !important;
+}
+
+/* Reaction (emoji) picker */
+.str-chat__reaction-selector,
+.str-chat__message-reactions-selector,
+.str-chat__message-reactions-options {
+  pointer-events: auto !important;
+  z-index: 10000 !important;
+}
+
+.str-chat__reaction-selector button,
+.str-chat__message-reactions-selector button {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+/* ============================================
+   DELETED MESSAGE
+   ============================================ */
+
+.str-chat__message--deleted-inner,
+.str-chat__message-deleted-inner {
+  background: hsl(var(--b2)) !important;
+  color: hsl(var(--bc) / 0.6) !important;
+  font-style: italic;
+  font-size: 0.85rem;
+  padding: 6px 12px !important;
+  border-radius: 16px !important;
+  display: inline-block;
+}
+
+/* ============================================
+   RESIZABLE PANEL
+   ============================================ */
+
+[data-panel-resize-handle-enabled] {
+  transition: background-color 0.15s ease;
+}
+
+[data-panel-resize-handle-enabled][data-resize-handle-active] {
+  background-color: hsl(var(--p) / 0.5);
+}
+
+.stream-chat-container {
+  height: 100%;
+}
+
+/* ============================================
+   MOBILE FIXES
+   ============================================ */
+
+@media (max-width: 768px) {
+  .str-chat__list {
+    padding: 8px;
+  }
+
+  .str-chat__message-input {
+    padding: 8px;
+  }
+
+  .str-chat__message-text,
+  .str-chat__message-text-inner,
+  .str-chat__message-bubble p {
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    white-space: normal !important;
+    max-width: 100% !important;
+  }
+
+  .str-chat__message-bubble,
+  .str-chat__message-simple__bubble {
+    max-width: 75vw !important;
+    min-width: 0 !important;
+  }
+
+  /* On mobile — always show actions (touch devices don't hover) */
+  .str-chat__message-simple__actions,
+  .str-chat__message-options {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
