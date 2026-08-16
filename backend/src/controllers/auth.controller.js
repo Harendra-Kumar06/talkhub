@@ -14,12 +14,12 @@ const signToken = (userId) =>
   jwt.sign({ userId }, process.env.JWT_SECRET_KEY, { expiresIn: "7d" });
 
 const setAuthCookie = (res, token) => {
-  res.cookie("jwt", token, {
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-    httpOnly: true,
-    sameSite: "strict",
-    secure: process.env.NODE_ENV === "production",
-  });
+res.cookie("jwt", token, {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+});
 };
 
 // ==================== SIGNUP (send OTP) ====================
