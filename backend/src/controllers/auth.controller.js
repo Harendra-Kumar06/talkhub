@@ -327,7 +327,11 @@ export async function resetPassword(req, res) {
 
 // ==================== LOGOUT ====================
 export async function logout(req, res) {
-  res.clearCookie("jwt");
+ res.clearCookie("jwt", {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+});
   res.status(200).json({ success: true, message: "Logout successful" });
 }
 
